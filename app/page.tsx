@@ -1,16 +1,20 @@
 
 import { Navbar } from "@/components/Navbar";
 import { BackgroundLines } from "@/components/ui/background-lines";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { projects } from "@/lib/utils";
 import { MoveRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div>
       <Navbar />
-      <BackgroundLines className="flex md:pt-0 pt-20 items-center justify-center w-full flex-col px-4 relative z-20">
+      <BackgroundLines className="flex md:pt-0 pt-15 items-center justify-center w-full flex-col px-4 relative z-20">
         <h2 className="bg-clip-text text-transparent text-center bg-gradient-to-b from-neutral-900 to-neutral-700 dark:from-neutral-600 dark:to-white text-2xl md:text-4xl lg:text-7xl font-sans py-2 md:py-10 relative z-20 font-bold tracking-tight">
-          Your Intelligent AI Assistant, <br /> for <span className="text-purple-700">Everything.</span>
+          Your Intelligent AI Assistant, <br /> for <span className="bg-gradient-to-r from-orange-400 via-yellow-400 to-blue-600 bg-clip-text text-transparent">Everything.</span>
         </h2>
         <p className="max-w-xl mx-auto text-sm md:text-lg text-neutral-700 dark:text-neutral-400 text-center">
           Experience the power of AI with our advanced assistant. Get answers, create content, and solve problems instantly.
@@ -32,7 +36,35 @@ export default function Home() {
           </Link>
         </div>
       </BackgroundLines>
-
+      <div className="flex flex-col overflow-hidden">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl font-semibold text-black dark:text-white">
+                Unleash the power of <br />
+                <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none 
+  bg-gradient-to-b from-stone-300 via-stone-500 to-gray-700 bg-clip-text text-transparent">
+                  Artificial Intelligence
+                </span>
+              </h1>
+            </>
+          }
+        >
+          <Image
+            src={"/heroCover.jpg"}
+            alt="hero"
+            height={720}
+            width={1400}
+            className="mx-auto rounded-2xl object-cover h-full object-left-top"
+            draggable={false}
+          />
+        </ContainerScroll>
+      </div>
+      <div className="h-[30rem] w-full bg-[black]">
+      <div className="max-w-5xl mx-auto px-8">
+      <HoverEffect items={projects} />
+    </div>
+      </div>
     </div>
   );
 }
