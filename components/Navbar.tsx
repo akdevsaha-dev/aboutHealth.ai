@@ -6,8 +6,8 @@ export const Navbar = () => {
         <div className="fixed top-0 left-0 h-20 bg-[white]/30 dark:bg-[black]/40 backdrop-blur-lg w-full z-30 border-b border-white/10 dark:border-gray-800 flex items-center justify-between px-6">
             {/* Logo Section */}
             <div className="flex gap-1 items-center font-bold text-2xl md:text-3xl">
-                <Sparkle color="green" size={30} />
-                <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
+                <Sparkle color="violet" size={30} />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
                     aboutHealth.ai
                 </span>
             </div>
