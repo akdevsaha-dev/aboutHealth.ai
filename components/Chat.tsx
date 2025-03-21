@@ -1,9 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { PlaceholdersAndVanishInput } from "./ui/placeholders-and-vanish-input";
+import { PanelRightOpen } from "lucide-react";
+import { ChatNav } from "./chat-navbar";
 
 
 export function Chat() {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     const placeholders = [
         "What are the symptoms of diabetes?",
         "How does AI help in early cancer detection?",
@@ -20,15 +25,49 @@ export function Chat() {
         console.log("submitted");
     };
     return (
-        <div className="h-screen flex flex-col justify-center px-4">
-            <h2 className="mb-10 sm:mb-20 text-xl border-2 border-amber-500 h-[90%] text-center flex justify-center items-center sm:text-5xl dark:text-white text-black">
-                Ask aboutHealth AI Anything.
-            </h2>
-            <PlaceholdersAndVanishInput
-                placeholders={placeholders}
-                onChange={handleChange}
-                onSubmit={onSubmit}
-            />
-        </div>
+        <div className="flex h-screen bg-black">
+            {/* Sidebar */}
+            <div
+                className={`bg-[#121111] z-20 text-white transition-all duration-300 ${isSidebarOpen ? "w-72" : "w-16"
+                    }`}
+            >
+                <button
+                    className="p-4 focus:outline-none"
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                >
+                    <PanelRightOpen />
+                </button>
+
+                {/* Sidebar Content */}
+                {isSidebarOpen && (
+                    <div className="p-4">
+                        <p>Menu Item 1</p>
+                        <p>Menu Item 2</p>
+                        <p>Menu Item 3</p>
+                        <p className="">now check</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Chat Area */}
+            <div className="flex-1 flex flex-col bg-black">
+                <div className="w-full">
+                    <ChatNav/>
+                </div>
+                {/* Example Chat Bubble */}
+                <div className="flex-1 p-6 overflow-y-auto">
+                    {/* Chat bubbles or messages will go here */}
+                </div>
+
+                {/* Input */}
+                <div className="border-gray-800 p-4 bg-black">
+                    <PlaceholdersAndVanishInput
+                        placeholders={placeholders}
+                        onChange={handleChange}
+                        onSubmit={onSubmit}
+                    />
+                </div>
+            </div>
+        </div >
     );
 }
