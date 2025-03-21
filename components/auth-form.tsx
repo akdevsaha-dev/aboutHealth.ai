@@ -4,24 +4,40 @@ import type React from "react"
 import { useState } from "react"
 import { GithubIcon, Loader2, EyeIcon, EyeOffIcon, Mail, Lock } from "lucide-react"
 import { Separator } from "./ui/Separator"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 export function AuthForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-
-        // Simulate authentication
-        setTimeout(() => {
+    const router = useRouter()
+    const credentialsAction = async (formData: FormData) => {
+        try {
+            setIsLoading(true)
+            const result = await signIn("credentials", {
+                email: formData.get('email') as string,
+                password: formData.get('password') as string,
+                redirect: false,
+            })
+            if (result?.error) {
+                toast.error("Incorrect email or password")
+            } else {
+                const session = await fetch('/api/auth/session')
+                const data = await session.json()
+                toast.success("Logged in successfully!")
+                router.push(`/chats/${data.user.id}`)
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+            toast.error("Something went wrong!");
+        } finally {
             setIsLoading(false)
-            console.log("Sign in with:", email, password)
-        }, 1500)
-    }
+        }
 
+    }
     return (
         <div className="w-full max-w-md space-y-8">
             <div className="space-y-2 text-center">
@@ -29,15 +45,16 @@ export function AuthForm() {
                 <p className="text-muted-foreground font-semibold text-gray-400">Sign in to your account to continue</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form action={credentialsAction} className="space-y-6">
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <label htmlFor="email" className="text-white">
                             Email
                         </label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        <div className="relative ">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 " />
                             <input
+                                name="email"
                                 id="email"
                                 type="email"
                                 placeholder="you@example.com"
@@ -61,6 +78,7 @@ export function AuthForm() {
                         <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                             <input
+                                name="password"
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
@@ -112,7 +130,15 @@ export function AuthForm() {
                 <button
                     type="button"
                     className="flex items-center justify-center py-2 px-4 rounded bg-gray-900 border border-gray-800 text-white hover:bg-gray-800"
-                    onClick={() => console.log("Sign in with Google")}
+                    onClick={async () => {
+                        const response = await signIn("google", { redirect: false })
+                        if (!response?.error) {
+                            const session = await fetch("/api/auth/session")
+                            const data = await session.json()
+                            router.push(`/chats/${data.user.id}`)
+                        }
+
+                    }}
                 >
                     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                         <path
@@ -139,7 +165,15 @@ export function AuthForm() {
                 <button
                     type="button"
                     className="flex items-center justify-center py-2 px-4 rounded bg-gray-900 border border-gray-800 text-white hover:bg-gray-800"
-                    onClick={() => console.log("Sign in with GitHub")}
+                    onClick={async () => {
+                        const response = await signIn("github", { redirect: false })
+                        if (!response?.error) {
+                            const session = await fetch("/api/auth/session")
+                            const data = await session.json()
+                            router.push(`/chats/${data.user.id}`)
+                        }
+
+                    }}
                 >
                     <GithubIcon className="mr-2 h-4 w-4" />
                     GitHub

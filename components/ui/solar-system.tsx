@@ -1,15 +1,16 @@
 "use client";
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export function SolarSystem() {
     const containerRef = useRef<HTMLDivElement>(null);
     const animationFrameId = useRef<number | undefined>(undefined);
+    const [animationKey] = useState(0);
 
     useEffect(() => {
-        if (!containerRef.current) return;
+        const container = containerRef.current;
+        if (!container) return;
 
         // Scene setup
         const scene = new THREE.Scene();
@@ -17,9 +18,9 @@ export function SolarSystem() {
         // Camera setup
         const camera = new THREE.PerspectiveCamera(
             75,
-            containerRef.current.clientWidth / containerRef.current.clientHeight,
+            container.clientWidth / container.clientHeight,
             0.1,
-            1000,
+            1000
         );
         camera.position.z = 25;
         camera.position.y = 10;
@@ -30,10 +31,10 @@ export function SolarSystem() {
             alpha: true,
             powerPreference: "high-performance",
         });
-        renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+        renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(window.devicePixelRatio);
-        containerRef.current.appendChild(renderer.domElement);
+        container.appendChild(renderer.domElement);
 
         // Controls
         const controls = new OrbitControls(camera, renderer.domElement);
@@ -53,14 +54,15 @@ export function SolarSystem() {
         pointLight.position.set(0, 0, 0);
         scene.add(pointLight);
 
-        // Add a subtle directional light for better shadows
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 3, 5);
         scene.add(directionalLight);
 
         // Sun with glow
         const sunGeometry = new THREE.SphereGeometry(3, 32, 32);
-        const sunTexture = new THREE.TextureLoader().load("/placeholder.svg?height=512&width=512");
+        const sunTexture = new THREE.TextureLoader().load(
+            "/placeholder.svg?height=512&width=512"
+        );
         const sunMaterial = new THREE.MeshStandardMaterial({
             map: sunTexture,
             color: 0xffcc33,
@@ -221,7 +223,13 @@ export function SolarSystem() {
             const orbitPoints: THREE.Vector3[] = [];
             for (let j = 0; j <= 128; j++) {
                 const angle = (j / 128) * Math.PI * 2;
-                orbitPoints.push(new THREE.Vector3(Math.cos(angle) * orbitRadius, 0, Math.sin(angle) * orbitRadius));
+                orbitPoints.push(
+                    new THREE.Vector3(
+                        Math.cos(angle) * orbitRadius,
+                        0,
+                        Math.sin(angle) * orbitRadius
+                    )
+                );
             }
 
             orbitGeometry.setFromPoints(orbitPoints);
@@ -255,7 +263,11 @@ export function SolarSystem() {
 
             // Add rings to Saturn and Uranus
             if (data.hasRings) {
-                const ringGeometry = new THREE.RingGeometry(data.size * 1.4, data.size * 2.2, 64);
+                const ringGeometry = new THREE.RingGeometry(
+                    data.size * 1.4,
+                    data.size * 2.2,
+                    64
+                );
 
                 const ringMaterial = new THREE.MeshStandardMaterial({
                     color: data.color,
@@ -347,7 +359,10 @@ export function SolarSystem() {
             starsVertices.push(x, y, z);
         }
 
-        starsGeometry.setAttribute("position", new THREE.Float32BufferAttribute(starsVertices, 3));
+        starsGeometry.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(starsVertices, 3)
+        );
         const stars = new THREE.Points(starsGeometry, starsMaterial);
         scene.add(stars);
 
@@ -375,7 +390,10 @@ export function SolarSystem() {
         ];
 
         for (let i = 0; i < 5; i++) {
-            const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterials[Math.floor(Math.random() * galaxyMaterials.length)]);
+            const galaxy = new THREE.Mesh(
+                galaxyGeometry,
+                galaxyMaterials[Math.floor(Math.random() * galaxyMaterials.length)]
+            );
 
             const distance = 70 + Math.random() * 30;
             const angle = Math.random() * Math.PI * 2;
@@ -403,7 +421,10 @@ export function SolarSystem() {
                 opacity: 0,
             });
 
-            const shootingStar = new THREE.Mesh(shootingStarGeometry, shootingStarMaterial);
+            const shootingStar = new THREE.Mesh(
+                shootingStarGeometry,
+                shootingStarMaterial
+            );
             shootingStar.rotation.x = Math.PI / 2;
 
             shootingStar.userData = {
@@ -460,7 +481,6 @@ export function SolarSystem() {
 
         // Animation
         const clock = new THREE.Clock();
-        // const targetPlanet: THREE.Object3D | null = null;
 
         const animate = () => {
             animationFrameId.current = requestAnimationFrame(animate);
@@ -468,7 +488,8 @@ export function SolarSystem() {
             const elapsedTime = clock.getElapsedTime();
 
             // Update sun glow
-            sunGlowMaterial.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, sunGlow.position);
+            sunGlowMaterial.uniforms.viewVector.value =
+                new THREE.Vector3().subVectors(camera.position, sunGlow.position);
 
             // Rotate sun
             sun.rotation.y += 0.002;
@@ -488,8 +509,10 @@ export function SolarSystem() {
                 moon.userData.angle += orbitSpeed;
 
                 // Position moon relative to its planet
-                moon.position.x = planet.position.x + Math.cos(moon.userData.angle) * distance;
-                moon.position.z = planet.position.z + Math.sin(moon.userData.angle) * distance;
+                moon.position.x =
+                    planet.position.x + Math.cos(moon.userData.angle) * distance;
+                moon.position.z =
+                    planet.position.z + Math.sin(moon.userData.angle) * distance;
                 moon.position.y = planet.position.y;
             });
 
@@ -508,19 +531,36 @@ export function SolarSystem() {
             // Animate nebula particles
             nebulaParticles.children.forEach((particle) => {
                 if (particle instanceof THREE.Mesh) {
-                    const { originalPosition, movementSpeed, movementDistance, movementOffset } = particle.userData;
+                    const {
+                        originalPosition,
+                        movementSpeed,
+                        movementDistance,
+                        movementOffset,
+                    } = particle.userData;
 
                     // Create a subtle floating motion
-                    particle.position.x = originalPosition.x + Math.sin(elapsedTime * movementSpeed + movementOffset) * movementDistance;
-                    particle.position.y = originalPosition.y + Math.cos(elapsedTime * movementSpeed + movementOffset) * movementDistance;
-                    particle.position.z = originalPosition.z + Math.sin(elapsedTime * movementSpeed * 0.5 + movementOffset) * movementDistance;
+                    particle.position.x =
+                        originalPosition.x +
+                        Math.sin(elapsedTime * movementSpeed + movementOffset) *
+                        movementDistance;
+                    particle.position.y =
+                        originalPosition.y +
+                        Math.cos(elapsedTime * movementSpeed + movementOffset) *
+                        movementDistance;
+                    particle.position.z =
+                        originalPosition.z +
+                        Math.sin(elapsedTime * movementSpeed * 0.5 + movementOffset) *
+                        movementDistance;
                 }
             });
 
             // Animate shooting stars
             shootingStars.forEach((star) => {
                 if (star.userData.active) {
-                    star.position.addScaledVector(star.userData.direction, star.userData.speed);
+                    star.position.addScaledVector(
+                        star.userData.direction,
+                        star.userData.speed
+                    );
                     star.userData.lifetime -= 0.02;
 
                     if (star.userData.lifetime <= 0) {
@@ -548,14 +588,14 @@ export function SolarSystem() {
                         star.userData.direction = new THREE.Vector3(
                             -star.position.x + (Math.random() - 0.5) * 10,
                             -star.position.y + (Math.random() - 0.5) * 10,
-                            -star.position.z + (Math.random() - 0.5) * 10,
+                            -star.position.z + (Math.random() - 0.5) * 10
                         ).normalize();
 
                         // Align with direction
                         star.lookAt(
                             star.position.x + star.userData.direction.x,
                             star.position.y + star.userData.direction.y,
-                            star.position.z + star.userData.direction.z,
+                            star.position.z + star.userData.direction.z
                         );
 
                         (star.material as THREE.MeshBasicMaterial).opacity = 1;
@@ -572,11 +612,11 @@ export function SolarSystem() {
 
         // Handle resize
         const handleResize = () => {
-            if (!containerRef.current) return;
+            if (!container) return;
 
-            camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+            camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+            renderer.setSize(container.clientWidth, container.clientHeight);
         };
 
         window.addEventListener("resize", handleResize);
@@ -587,21 +627,31 @@ export function SolarSystem() {
             if (animationFrameId.current) {
                 cancelAnimationFrame(animationFrameId.current);
             }
-            if (containerRef.current) {
-                containerRef.current.removeChild(renderer.domElement);
+            if (container) {
+                container.removeChild(renderer.domElement);
             }
         };
-    }, []);
+    }, [animationKey]);
 
     return (
         <div
             ref={containerRef}
             className="w-full h-full absolute inset-0"
             style={{
-                background: "radial-gradient(circle at center, #1a0b2e 0%, #090218 50%, #000000 100%)",
+                background:
+                    "radial-gradient(circle at center, #1a0b2e 0%, #090218 50%, #000000 100%)",
             }}
         >
-            <div id="planet-info" style={{ position: "absolute", top: "10px", left: "10px", color: "white", zIndex: 100 }}></div>
+            <div
+                id="planet-info"
+                style={{
+                    position: "absolute",
+                    top: "10px",
+                    left: "10px",
+                    color: "white",
+                    zIndex: 100,
+                }}
+            ></div>
         </div>
     );
 }

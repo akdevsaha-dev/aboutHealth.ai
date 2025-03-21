@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { RoboAnimation } from "./robo-animation"
 import { FloatingPaper } from "./floating-paper"
 import { FileText, Sparkles } from "lucide-react"
+import { TypingAnimation } from "../magicui/typing-animation"
 
 export default function Hero() {
     return (
@@ -31,7 +32,7 @@ export default function Hero() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="text-gray-400 text-xl mb-8 max-w-2xl mx-auto"
                     >
-                        Ask health-related questions, upload reports, or share symptoms — our Health AI provides accurate, conversational answers, simplifying complex medical information into easy-to-understand insights, tailored just for you.
+                        <TypingAnimation>Ask health-related questions, upload reports, or share symptoms — our Health AI provides accurate, conversational answers, simplifying complex medical information into easy-to-understand insights, tailored just for you.</TypingAnimation>
                     </motion.p>
 
                     <motion.div
