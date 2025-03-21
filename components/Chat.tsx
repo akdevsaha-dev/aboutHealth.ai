@@ -8,7 +8,7 @@ export function Chat() {
         "What are the symptoms of diabetes?",
         "How does AI help in early cancer detection?",
         "What is personalized medicine in healthcare?",
-        "Write a JavaScript function to calculate BMI",
+        "Calculate my BMI",
         "How can AI predict heart diseases?"
     ];
 
@@ -22,7 +22,7 @@ export function Chat() {
     return (
         <div className="h-screen flex flex-col justify-center px-4">
             <h2 className="mb-10 sm:mb-20 text-xl border-2 border-amber-500 h-[90%] text-center flex justify-center items-center sm:text-5xl dark:text-white text-black">
-                Ask aboutHealth AI Anything
+                Ask aboutHealth AI Anything.
             </h2>
             <PlaceholdersAndVanishInput
                 placeholders={placeholders}
